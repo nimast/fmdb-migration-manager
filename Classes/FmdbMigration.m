@@ -43,12 +43,32 @@
 #pragma mark -
 #pragma mark Helper methods for manipulating database schema
 
-- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns 
+- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns
 {
-	[self createTable:tableName];
-	for (FmdbMigrationColumn *migrationColumn in columns) {
-		[self addColumn:migrationColumn forTableName:tableName];
-	}
+    NSMutableArray *columnDefinitions;
+    [columnDefinitions addObject:"id integer primary key autoincrement"];
+    for (FmdbMigrationColumn *migrationColumn in columns) {
+        [columnDefinitions addObject:[migrationColumn sqlDefinition]];
+    }
+
+    NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@)", tableName, [columnDefinitions componentsJoinedByString:@","]];
+    [db_ executeUpdate:sql];
+}
+
+- (void)createTable:(NSString *)tableName
+        withColumns:(NSArray *)columns
+     andPrimaryKeys:(NSArray *)keyNames
+{
+    NSMutableArray *columnDefinitions = [[NSMutableArray alloc] initWithCapacity:[columns count]];
+    for (FmdbMigrationColumn *migrationColumn in columns) {
+        [columnDefinitions addObject:[migrationColumn sqlDefinition]];
+    }
+
+    NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@, primary key (%@))",
+                    tableName,
+                    [columnDefinitions componentsJoinedByString:@","],
+                    [keyNames componentsJoinedByString:@","]];
+    [db_ executeUpdate:sql];
 }
 
 - (void)createTable:(NSString *)tableName 

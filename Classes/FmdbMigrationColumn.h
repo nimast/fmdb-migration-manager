@@ -16,6 +16,7 @@
 }
 @property (retain) NSString *columnName;
 @property (retain) NSString *columnType;
+@property BOOL allowNulls;
 @property (retain) id defaultValue;
 
 + (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
@@ -23,6 +24,13 @@
 + (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
                                   columnType:(NSString*)columnType
                                 defaultValue:(id)defaultValue;
++ (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
+                                  columnType:(NSString*)columnType
+                                defaultValue:(id)defaultValue
+                                  allowNulls:(BOOL)allowNulls;
++ (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
+                                  columnType:(NSString*)columnType
+                                  allowNulls:(BOOL)allowNulls;
 
 // Used for sql queries "ALTER TABLE table_name ADD COLUMN [column sqlDefinition]"
 - (NSString *)sqlDefinition;

@@ -25,6 +25,7 @@
 
 - (void)createTable:(NSString *)tableName;
 - (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns;
+- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns andPrimaryKeys:(NSArray *)keyNames;
 - (void)dropTable:(NSString *)tableName;
 
 - (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName;
