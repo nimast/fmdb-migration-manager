@@ -10,41 +10,37 @@
 
 
 @implementation FmdbMigration
-@synthesize db=db_;
+@synthesize db = db_;
 
 + (id)migration {
-	return [[[self alloc] init] autorelease];
+    return [[[self alloc] init] autorelease];
 }
 
 #pragma mark -
 #pragma mark up/down methods
 
-- (void)up 
-{
-	NSLog([NSString stringWithFormat:@"%s: -up method not implemented", NSStringFromClass([self class])]);
+- (void)up {
+    NSLog([NSString stringWithFormat:@"%s: -up method not implemented", NSStringFromClass([self class])]);
 }
 
-- (void)down 
-{
-	NSLog([NSString stringWithFormat:@"%s: -down method not implemented", NSStringFromClass([self class])]);
+- (void)down {
+    NSLog([NSString stringWithFormat:@"%s: -down method not implemented", NSStringFromClass([self class])]);
 }
 
-- (void)upWithDatabase:(FMDatabase *)db 
-{
-	self.db = db;
-	[self up];
+- (void)upWithDatabase:(FMDatabase *)db {
+    self.db = db;
+    [self up];
 }
-- (void)downWithDatabase:(FMDatabase *)db 
-{
-	self.db = db;
-	[self down];
+
+- (void)downWithDatabase:(FMDatabase *)db {
+    self.db = db;
+    [self down];
 }
 
 #pragma mark -
 #pragma mark Helper methods for manipulating database schema
 
-- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns
-{
+- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns {
     NSMutableArray *columnDefinitions;
     [columnDefinitions addObject:"id integer primary key autoincrement"];
     for (FmdbMigrationColumn *migrationColumn in columns) {
@@ -55,58 +51,68 @@
     [db_ executeUpdate:sql];
 }
 
+- (void)createIndex:(NSString *)indexName
+            onTable:(NSString *)tableName
+        withColumns:(NSArray *)columns {
+    NSString *indexColumns = [columns componentsJoinedByString:@","];
+    NSString *sql = [NSString stringWithFormat:@"CREATE INDEX IF NOT EXISTS %@ ON %@ (%@);",
+                                               indexName,
+                                               tableName,
+                                               indexColumns];
+    [db_ executeUpdate:sql];
+}
+
 - (void)createTable:(NSString *)tableName
         withColumns:(NSArray *)columns
-     andPrimaryKeys:(NSArray *)keyNames
-{
+     andPrimaryKeys:(NSArray *)keyNames {
     NSMutableArray *columnDefinitions = [[NSMutableArray alloc] initWithCapacity:[columns count]];
     for (FmdbMigrationColumn *migrationColumn in columns) {
         [columnDefinitions addObject:[migrationColumn sqlDefinition]];
     }
 
     NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@, primary key (%@))",
-                    tableName,
-                    [columnDefinitions componentsJoinedByString:@","],
-                    [keyNames componentsJoinedByString:@","]];
+                                               tableName,
+                                               [columnDefinitions componentsJoinedByString:@","],
+                                               [keyNames componentsJoinedByString:@","]];
     [db_ executeUpdate:sql];
 }
 
-- (void)createTable:(NSString *)tableName 
-{
-	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (id integer primary key autoincrement)", tableName];
-	[db_ executeUpdate:sql];
+- (void)createTable:(NSString *)tableName {
+    NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (id integer primary key autoincrement)", tableName];
+    [db_ executeUpdate:sql];
 }
 
-- (void)dropTable:(NSString *)tableName 
-{
-	NSString *sql = [NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", tableName];
-	[db_ executeUpdate:sql];
+- (void)dropTable:(NSString *)tableName {
+    NSString *sql = [NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", tableName];
+    [db_ executeUpdate:sql];
 }
 
-- (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName 
-{
-	NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN %@", tableName, [column sqlDefinition]];
-	[db_ executeUpdate:sql];
+- (void)dropIndex:(NSString *)indexName {
+    NSString *sql = [NSString stringWithFormat:@"DROP INDEX IF EXISTS %@", indexName];
+    [db_ executeUpdate:sql];
+}
+
+- (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName {
+    NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN %@", tableName, [column sqlDefinition]];
+    [db_ executeUpdate:sql];
 }
 
 
 #pragma mark -
 #pragma mark Unit testing helpers
 
-- (id)initWithDatabase:(FMDatabase *)db 
-{
-	if ([super init]) {
-		self.db = db;
-		return self;
-	}
-	return nil;
+- (id)initWithDatabase:(FMDatabase *)db {
+    if ([super init]) {
+        self.db = db;
+        return self;
+    }
+    return nil;
 }
 
-- (void)dealloc
-{
-	[db_ release];
-	
-	[super dealloc];
+- (void)dealloc {
+    [db_ release];
+
+    [super dealloc];
 }
 
 

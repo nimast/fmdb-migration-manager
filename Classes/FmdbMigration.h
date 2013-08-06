@@ -25,8 +25,13 @@
 
 - (void)createTable:(NSString *)tableName;
 - (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns;
+
+- (void)createIndex:(NSString *)indexName onTable:(NSString *)tableName withColumns:(NSArray *)columns;
+
 - (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns andPrimaryKeys:(NSArray *)keyNames;
 - (void)dropTable:(NSString *)tableName;
+
+- (void)dropIndex:(NSString *)indexName;
 
 - (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName;
 
@@ -34,4 +39,5 @@
 // Production code should never call this method, instead instantiate
 // your subclasses with +migration method.
 - (id)initWithDatabase:(FMDatabase *)db;
+
 @end
