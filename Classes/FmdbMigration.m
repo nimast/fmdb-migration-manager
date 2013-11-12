@@ -97,6 +97,11 @@
     [db_ executeUpdate:sql];
 }
 
+- (void)dropColumn:(NSString *)columnName forTableName:(NSString *)tableName {
+	NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ DROP COLUMN %@", tableName, columnName];
+	[db_ executeUpdate:sql];
+}
+
 
 #pragma mark -
 #pragma mark Unit testing helpers
