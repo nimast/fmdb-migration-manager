@@ -97,8 +97,8 @@
     [db_ executeUpdate:sql];
 }
 
-- (void)dropColumn:(NSString *)columnName forTableName:(NSString *)tableName {
-	NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ DROP COLUMN %@", tableName, columnName];
+- (void)dropColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName {
+	NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ DROP COLUMN %@", tableName, column.columnName];
 	[db_ executeUpdate:sql];
 }
 
