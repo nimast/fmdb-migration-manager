@@ -34,8 +34,7 @@
 - (void)dropIndex:(NSString *)indexName;
 
 - (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName;
-- (void)dropColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName;
-
+- (void)dropColumn:(NSString *)columnName forTableName:(NSString *)tableName;
 
 // This init method exists for the purposes of unit testing.
 // Production code should never call this method, instead instantiate
